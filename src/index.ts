@@ -1,1 +1,2 @@
-export * from './Logger'
+export * from "./Logger";
+export * from "./middlewares";

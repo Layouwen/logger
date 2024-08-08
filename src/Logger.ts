@@ -1,4 +1,5 @@
-import winston, { format, transports } from "winston";
+import type { Logger as WinstonLogger } from "winston";
+import { createLogger, format, transports } from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
 import { SPLAT } from "triple-beam";
 
@@ -7,18 +8,18 @@ export interface LoggerConfig {
 }
 
 export class Logger {
-  public error: winston.Logger;
-  public daily: winston.Logger;
-  public debug: winston.Logger;
+  public error: WinstonLogger;
+  public daily: WinstonLogger;
+  public debug: WinstonLogger;
 
   constructor(private config: LoggerConfig = {}) {
     const defaultConfig = {
-      projectName: 'main-app'
-    }
+      projectName: "main-app",
+    };
 
-    this.config = Object.assign(defaultConfig, config)
+    this.config = Object.assign(defaultConfig, config);
 
-    this.error = winston.createLogger({
+    this.error = createLogger({
       level: "debug",
       defaultMeta: { service: this.config.projectName },
       format: this.getBaseFormat(),
@@ -35,7 +36,7 @@ export class Logger {
       ],
     });
 
-    this.daily = winston.createLogger({
+    this.daily = createLogger({
       level: "debug",
       defaultMeta: { service: this.config.projectName },
       format: this.getBaseFormat(),
@@ -50,7 +51,7 @@ export class Logger {
       ],
     });
 
-    this.debug = winston.createLogger({
+    this.debug = createLogger({
       level: "debug",
       defaultMeta: { service: this.config.projectName },
       format: this.getBaseFormat(),
