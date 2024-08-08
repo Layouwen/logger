@@ -1,0 +1,9 @@
+node_modules
+dist
+pkg
+docker-images
+
+.env
+
+.idea
+.vscode
