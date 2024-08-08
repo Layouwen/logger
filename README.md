@@ -45,7 +45,7 @@ logger.daily.info("info log")
 // [2024-08-08 16:37:24] [auth-service] [INFO]: info log
 ```
 
-## Output logger file
+## Output Logger File
 
 ```
 project
@@ -55,4 +55,36 @@ project
 │   ├── error
 │   │   └── error.YYYY-MM-DD.log
 │   └── debug.log
+```
+
+## Logger Middleware
+
+### Koa
+
+```ts
+import { bodyParser } from '@koa/bodyparser';
+import { koaHttpLogger } from "@avanlan/logger";
+
+const logger = new Logger();
+
+app.use(bodyparser());
+app.use(koaHttpLogger(logger));
+
+// output
+// [2024-08-08 17:34:20] [main-app] [INFO]: 2ms GET / ::1 {"headers":{"host":"localhost:8044","user-agent":"curl/8.6.0","accept":"*/*"},"query":{},"body":{}}
+```
+
+### Express
+
+```ts
+import { expressHttpLogger } from "@avanlan/logger";
+import bodyParser from 'body-parser';
+
+const logger = new Logger();
+
+app.use(bodyParser.json());
+app.use(expressHttpLogger(logger));
+
+// output
+// [2024-08-08 17:47:55] [main-app] [INFO]: 0ms GET / ::1 {"headers":{"host":"localhost:5834","user-agent":"curl/8.6.0","accept":"*/*"},"query":{}}
 ```

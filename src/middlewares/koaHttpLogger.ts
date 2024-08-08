@@ -1,14 +1,20 @@
 import type { Logger } from "../Logger";
 import type { Context, Next } from "koa";
 
-export function koaHttpLogger(logger: Logger) {
+export interface KoaHttpLoggerConfig {}
+
+export function koaHttpLogger(
+  logger: Logger,
+  config: KoaHttpLoggerConfig = {},
+) {
   return async function (ctx: Context, next: Next) {
-    const { method, url, query, body, headers, ip } = ctx;
+    const { method, url, query, headers, ip } = ctx;
+
     const startTime = Date.now();
     const content = {
       headers,
       query,
-      body,
+      body: (ctx.request as any).body,
     };
 
     await next();

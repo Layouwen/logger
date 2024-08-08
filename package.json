@@ -13,7 +13,11 @@
     "README.md"
   ],
   "keywords": [
-    "logger"
+    "logger",
+    "http",
+    "koa",
+    "express",
+    "winston"
   ],
   "author": {
     "name": "Avan",
