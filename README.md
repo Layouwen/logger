@@ -2,10 +2,15 @@
 
 A logger for Node.js.
 
+[![Version npm](https://img.shields.io/npm/v/@avanlan/logger.svg?style=flat-square)](https://www.npmjs.com/package/@avanlan/logger)
+[![NPM Downloads](https://img.shields.io/npm/dw/%40avanlan%2Flogger)](https://www.npmjs.com/package/@avanlan/logger)
+
+[![NPM](https://nodei.co/npm/@avanlan/logger.png?downloads=true&downloadRank=true)](https://nodei.co/npm/@avanlan/logger/)
+
 ## Install
 
 ```bash
-pnpm i @avan/logger
+pnpm i @avanlan/logger
 ```
 
 ## Usage
