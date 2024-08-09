@@ -16,6 +16,8 @@ pnpm i @avanlan/logger
 ## Usage
 
 ```ts
+import { Logger } from '@avanlan/logger';
+
 const logger = new Logger();
 
 logger.daily.info("info log")
@@ -35,6 +37,8 @@ logger.debug.info("error log")
 Specify the project name.
 
 ```ts
+import { Logger } from '@avanlan/logger';
+
 const logger = new Logger({
   project: "auth-service",
 });
@@ -62,8 +66,8 @@ project
 ### Koa
 
 ```ts
+import { Logger, koaHttpLogger } from "@avanlan/logger";
 import { bodyParser } from '@koa/bodyparser';
-import { koaHttpLogger } from "@avanlan/logger";
 
 const logger = new Logger();
 
@@ -77,7 +81,7 @@ app.use(koaHttpLogger(logger));
 ### Express
 
 ```ts
-import { expressHttpLogger } from "@avanlan/logger";
+import { Logger, expressHttpLogger } from "@avanlan/logger";
 import bodyParser from 'body-parser';
 
 const logger = new Logger();
