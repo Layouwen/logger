@@ -40,7 +40,7 @@ Specify the project name.
 import { Logger } from '@avanlan/logger';
 
 const logger = new Logger({
-  project: "auth-service",
+  projectName: "auth-service",
 });
 
 logger.daily.info("info log")
