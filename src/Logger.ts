@@ -9,6 +9,7 @@ export interface LoggerConfig {
 
 export class Logger {
   public error: WinstonLogger;
+  public access: WinstonLogger;
   public daily: WinstonLogger;
   public debug: WinstonLogger;
 
@@ -31,6 +32,21 @@ export class Logger {
           datePattern: "YYYY-MM-DD",
           // maxSize: '20m',
           // maxFiles: '14d',
+        }),
+        new transports.Console(),
+      ],
+    });
+
+    this.access = createLogger({
+      level: "debug",
+      defaultMeta: { service: this.config.projectName },
+      format: this.getBaseFormat(),
+      transports: [
+        new DailyRotateFile({
+          level: "debug",
+          dirname: "logs/access",
+          filename: "access.%DATE%.log",
+          datePattern: "YYYY-MM-DD",
         }),
         new transports.Console(),
       ],

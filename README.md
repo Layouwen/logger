@@ -20,14 +20,16 @@ import { Logger } from '@avanlan/logger';
 
 const logger = new Logger();
 
-logger.daily.info("info log")
+logger.access.info("access log")
+logger.daily.info("daily log")
 logger.error.error("error log")
-logger.debug.info("error log")
+logger.debug.info("debug log")
 
 // output
-// [2024-08-08 16:37:24] [main-app] [INFO]: info log
+// [2024-08-08 16:37:24] [main-app] [INFO]: access log
+// [2024-08-08 16:37:24] [main-app] [INFO]: daily log
 // [2024-08-08 16:37:24] [main-app] [ERROR]: error log
-// [2024-08-08 16:37:24] [main-app] [INFO]: error log
+// [2024-08-08 16:37:24] [main-app] [INFO]: debug log
 ```
 
 ## Configuration
@@ -45,7 +47,7 @@ const logger = new Logger({
 
 logger.daily.info("info log")
 
-// output
+// output daily log
 // [2024-08-08 16:37:24] [auth-service] [INFO]: info log
 ```
 
@@ -54,6 +56,8 @@ logger.daily.info("info log")
 ```
 project
 ├── logger
+│   ├── access
+│   │   └── access.YYYY-MM-DD.log
 │   ├── daily
 │   │   └── daily.YYYY-MM-DD.log
 │   ├── error
@@ -74,7 +78,7 @@ const logger = new Logger();
 app.use(bodyparser());
 app.use(koaHttpLogger(logger));
 
-// output
+// output access log
 // [2024-08-08 17:34:20] [main-app] [INFO]: 2ms GET / ::1 {"headers":{"host":"localhost:8044","user-agent":"curl/8.6.0","accept":"*/*"},"query":{},"body":{}}
 ```
 
@@ -89,6 +93,6 @@ const logger = new Logger();
 app.use(bodyParser.json());
 app.use(expressHttpLogger(logger));
 
-// output
+// output access log
 // [2024-08-08 17:47:55] [main-app] [INFO]: 0ms GET / ::1 {"headers":{"host":"localhost:5834","user-agent":"curl/8.6.0","accept":"*/*"},"query":{}}
 ```
