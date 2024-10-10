@@ -13,7 +13,7 @@ export function expressHttpLogger(logger: Logger) {
 
     res.on("finish", () => {
       const time = Date.now() - startTime;
-      logger.daily.info(`${time}ms`, method, url, ip, content);
+      logger.access.info(`${time}ms`, method, url, ip, content);
     });
 
     next();

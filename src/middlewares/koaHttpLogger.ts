@@ -20,6 +20,6 @@ export function koaHttpLogger(
     await next();
 
     const time = Date.now() - startTime;
-    logger.daily.info(`${time}ms`, method, url, ip, content);
+    logger.access.info(`${time}ms`, method, url, ip, content);
   };
 }
