@@ -3,6 +3,14 @@ import { createLogger, format, transports } from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
 import { SPLAT } from "triple-beam";
 
+function safeStringify(value: any) {
+  try {
+    return JSON.stringify(value);
+  } catch (error) {
+    return value;
+  }
+}
+
 export interface LoggerConfig {
   projectName?: string;
 }
@@ -95,8 +103,10 @@ export class Logger {
   private getPrintfFormat() {
     return format.printf(({ level, service, timestamp, message, ...rest }) => {
       const parseMessage = (message: any) => {
-        // return typeof message === "object" ? JSON.stringify(message) : message;
-        return message;
+        if (message instanceof Error) {
+          return message;
+        }
+        return typeof message === "object" ? safeStringify(message) : message;
       };
 
       let result = `[${timestamp}] [${service}] [${level.toUpperCase()}]: ${parseMessage(message)}`;
