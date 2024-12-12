@@ -104,14 +104,14 @@ export class Logger {
     return format.printf(({ level, service, timestamp, message, ...rest }) => {
       const parseMessage = (message: any) => {
         if (message instanceof Error) {
-          return message;
+          return `${message.name} ${message.message} ${message.stack}`;
         }
         return typeof message === "object" ? safeStringify(message) : message;
       };
 
       let result = `[${timestamp}] [${service}] [${level.toUpperCase()}]: ${parseMessage(message)}`;
 
-      const splat = rest[SPLAT];
+      const splat = rest[SPLAT] as undefined | any[];
       if (splat?.length) {
         splat.forEach((i: any) => {
           result += ` ${parseMessage(i)}`;
