@@ -95,7 +95,8 @@ export class Logger {
   private getPrintfFormat() {
     return format.printf(({ level, service, timestamp, message, ...rest }) => {
       const parseMessage = (message: any) => {
-        return typeof message === "object" ? JSON.stringify(message) : message;
+        // return typeof message === "object" ? JSON.stringify(message) : message;
+        return message;
       };
 
       let result = `[${timestamp}] [${service}] [${level.toUpperCase()}]: ${parseMessage(message)}`;
