@@ -1,0 +1,17 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const src_1 = require("./src");
+const logger = new src_1.Logger();
+logger.access.info("access log");
+logger.daily.info("daily log");
+logger.error.error("error log", new Error());
+logger.debug.info("debug log", { a: 1 });
+logger.access.info({
+    time: "32m",
+    method: "GET",
+    url: "/",
+    ip: "127.0.0.1",
+    body: "hello",
+    headers: { "content-type": "application/json" },
+    query: { a: 1 },
+});
