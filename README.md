@@ -37,23 +37,26 @@ logger.access.info({
     a: 1,
   },
 });
+```
 
-// output
-// [2024-12-13 12:13:19] [main-app] [INFO]: access log
-// [2024-12-13 12:13:19] [main-app] [INFO]: daily log
-// [2024-12-13 12:13:19] [main-app] [ERROR]: error log Error  Error
-//     at Object.<anonymous> (/Users/avan/Code/personal/logger/demo.ts:7:33)
-//     at Module._compile (node:internal/modules/cjs/loader:1546:14)
-//     at Module.m._compile (/Users/avan/Code/personal/logger/node_modules/.pnpm/ts-node@10.9.2_@types+node@22.10.2_typescript@5.7.2/node_modules/ts-node/src/index.ts:1618:23)
-//     at node:internal/modules/cjs/loader:1689:10
-//     at Object.require.extensions.<computed> [as .ts] (/Users/avan/Code/personal/logger/node_modules/.pnpm/ts-node@10.9.2_@types+node@22.10.2_typescript@5.7.2/node_modules/ts-node/src/index.ts:1621:12)
-//     at Module.load (node:internal/modules/cjs/loader:1318:32)
-//     at Function._load (node:internal/modules/cjs/loader:1128:12)
-//     at TracingChannel.traceSync (node:diagnostics_channel:315:14)
-//     at wrapModuleLoad (node:internal/modules/cjs/loader:218:24)
-//     at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:170:5)
-// [2024-12-13 12:13:19] [main-app] [INFO]: debug log {"a":1}
-// [2024-12-13 12:13:19] [main-app] [INFO]: 32m GET / 127.0.0.1 headers: {"content-type":"application/json"} query: {"a":1} body: "hello"
+output
+
+```bash
+[2024-12-13 12:13:19] [main-app] [INFO]: access log
+[2024-12-13 12:13:19] [main-app] [INFO]: daily log
+[2024-12-13 12:13:19] [main-app] [ERROR]: error log Error  Error
+    at Object.<anonymous> (/Users/avan/Code/personal/logger/demo.ts:7:33)
+    at Module._compile (node:internal/modules/cjs/loader:1546:14)
+    at Module.m._compile (/Users/avan/Code/personal/logger/node_modules/.pnpm/ts-node@10.9.2_@types+node@22.10.2_typescript@5.7.2/node_modules/ts-node/src/index.ts:1618:23)
+    at node:internal/modules/cjs/loader:1689:10
+    at Object.require.extensions.<computed> [as .ts] (/Users/avan/Code/personal/logger/node_modules/.pnpm/ts-node@10.9.2_@types+node@22.10.2_typescript@5.7.2/node_modules/ts-node/src/index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1318:32)
+    at Function._load (node:internal/modules/cjs/loader:1128:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:315:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:218:24)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:170:5)
+[2024-12-13 12:13:19] [main-app] [INFO]: debug log {"a":1}
+[2024-12-13 12:13:19] [main-app] [INFO]: 32m GET / 127.0.0.1 headers: {"content-type":"application/json"} query: {"a":1} body: "hello"
 ```
 
 ![demo01](./images/demo01.jpg)
