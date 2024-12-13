@@ -2,6 +2,25 @@ import type { Logger as WinstonLogger } from "winston";
 import { createLogger, format, transports } from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
 import { SPLAT } from "triple-beam";
+import chalk from "chalk";
+import { LevelColorMap } from "./LevelColorMap";
+import { LoggerLevel } from "./types";
+
+function isHttpLogger(params: any): params is {
+  time: string;
+  method: string;
+  url: string;
+  ip: string;
+  headers: any;
+  query: any;
+  body: any;
+} {
+  if (typeof params !== "object" || params === null) {
+    return false;
+  }
+  const keys = ["time", "method", "url", "ip", "headers", "query", "body"];
+  return keys.every((key) => key in params);
+}
 
 function safeStringify(value: any) {
   try {
@@ -41,14 +60,13 @@ export class Logger {
           // maxSize: '20m',
           // maxFiles: '14d',
         }),
-        new transports.Console(),
       ],
     });
 
     this.access = createLogger({
       level: "debug",
       defaultMeta: { service: this.config.projectName },
-      format: this.getBaseFormat(),
+      format: this.getBaseFormat({ type: "access" }),
       transports: [
         new DailyRotateFile({
           level: "debug",
@@ -56,7 +74,6 @@ export class Logger {
           filename: "access.%DATE%.log",
           datePattern: "YYYY-MM-DD",
         }),
-        new transports.Console(),
       ],
     });
 
@@ -71,7 +88,6 @@ export class Logger {
           filename: "daily.%DATE%.log",
           datePattern: "YYYY-MM-DD",
         }),
-        new transports.Console(),
       ],
     });
 
@@ -85,7 +101,6 @@ export class Logger {
           dirname: "logs",
           filename: "debug.log",
         }),
-        new transports.Console(),
       ],
     });
   }
@@ -100,33 +115,67 @@ export class Logger {
     return format.errors({ stack: true });
   }
 
-  private getPrintfFormat() {
-    return format.printf(({ level, service, timestamp, message, ...rest }) => {
-      const parseMessage = (message: any) => {
+  private getPrintfFormat(options?: { type: "access" }) {
+    return format.printf(({ level, service, timestamp, message, ..._rest }) => {
+      const rest = [message];
+      if (_rest && _rest[SPLAT]) {
+        (_rest[SPLAT] as any[]).forEach((i: any) => {
+          rest.push(i);
+        });
+      }
+      function parseMessage(message: any) {
         if (message instanceof Error) {
           return `${message.name} ${message.message} ${message.stack}`;
         }
         return typeof message === "object" ? safeStringify(message) : message;
-      };
-
-      let result = `[${timestamp}] [${service}] [${level.toUpperCase()}]: ${parseMessage(message)}`;
-
-      const splat = rest[SPLAT] as undefined | any[];
-      if (splat?.length) {
-        splat.forEach((i: any) => {
-          result += ` ${parseMessage(i)}`;
-        });
       }
 
-      return result;
+      function genResult(_options?: { color: boolean }) {
+        const headerArr = [timestamp, service, level.toUpperCase()] as string[];
+        const headerColorMap = [chalk.gray, chalk.green, new LevelColorMap()];
+        const header = headerArr
+          .map((i, index) => {
+            if (_options?.color) {
+              if (headerColorMap[index] instanceof LevelColorMap) {
+                const level = headerArr[index] as LoggerLevel;
+                return headerColorMap[index][level](`[${i}]`);
+              }
+              return headerColorMap[index](`[${i}]`);
+            }
+            return `[${i}]`;
+          })
+          .join(" ");
+
+        let result = `${header}:`;
+        if (options?.type === "access" && rest[0] && isHttpLogger(rest[0])) {
+          const { time, method, url, ip, headers, query, body } = rest[0];
+          if (_options?.color) {
+            result += ` ${chalk.green(`${time}`)} ${chalk.cyan(method)} ${chalk.blue(url)} ${chalk.yellow(ip)} ${chalk.magenta('headers:')} ${chalk.gray(safeStringify(headers))} ${chalk.magenta('query:')} ${chalk.gray(safeStringify(query))} ${chalk.magenta('body:')} ${chalk.gray(safeStringify(body))}`;
+          } else {
+            result += ` ${time} ${method} ${url} ${ip} headers: ${safeStringify(headers)} query: ${safeStringify(query)} body: ${safeStringify(body)}`;
+          }
+        } else {
+          if (rest?.length) {
+            rest.forEach((i: any) => {
+              result += ` ${parseMessage(i)}`;
+            });
+          }
+        }
+
+        return result;
+      }
+
+      console.log(genResult({ color: true }));
+
+      return genResult();
     });
   }
 
-  private getBaseFormat() {
+  private getBaseFormat(options?: { type: "access" }) {
     return format.combine(
       this.getTimestampFormat(),
       this.getErrorsFormat(),
-      this.getPrintfFormat(),
+      this.getPrintfFormat(options)
     );
   }
 }

@@ -5,15 +5,19 @@ export function expressHttpLogger(logger: Logger) {
   return function (req: Request, res: Response, next: NextFunction) {
     const { method, url, query, body, headers, ip } = req;
     const startTime = Date.now();
-    const content = {
-      headers,
-      query,
-      body,
-    };
+    const content = {};
 
     res.on("finish", () => {
       const time = Date.now() - startTime;
-      logger.access.info(`${time}ms`, method, url, ip, content);
+      logger.access.info({
+        time: `${time}ms`,
+        method,
+        url,
+        ip,
+        headers,
+        query,
+        body,
+      });
     });
 
     next();
