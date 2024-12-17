@@ -1,4 +1,4 @@
-import chalk from "chalk";
+import { chalk } from "./utils";
 import { LoggerLevel } from "./types";
 
 export class LevelColorMap {

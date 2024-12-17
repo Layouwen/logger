@@ -2,7 +2,7 @@ import type { Logger as WinstonLogger } from "winston";
 import { createLogger, format, transports } from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
 import { SPLAT } from "triple-beam";
-import chalk from "chalk";
+import { chalk } from "./utils";
 import { LevelColorMap } from "./LevelColorMap";
 import { LoggerLevel } from "./types";
 
