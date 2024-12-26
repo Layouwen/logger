@@ -6,6 +6,18 @@ import { chalk } from "./utils";
 import { LevelColorMap } from "./LevelColorMap";
 import { LoggerLevel } from "./types";
 
+type stringOrNumber = string | number;
+
+interface DailyRotateFileConfig {
+  maxSize?: stringOrNumber;
+  maxFiles?: stringOrNumber;
+}
+
+interface TransportsFileConfig {
+  maxsize?: number;
+  maxFiles?: number;
+}
+
 function isHttpLogger(params: any): params is {
   time: string;
   method: string;
@@ -32,6 +44,8 @@ function safeStringify(value: any) {
 
 export interface LoggerConfig {
   projectName?: string;
+  dailyRotateFile?: DailyRotateFileConfig;
+  transportsFile?: TransportsFileConfig;
 }
 
 export class Logger {
@@ -41,8 +55,10 @@ export class Logger {
   public debug: WinstonLogger;
 
   constructor(private config: LoggerConfig = {}) {
-    const defaultConfig = {
+    const defaultConfig: LoggerConfig = {
       projectName: "main-app",
+      dailyRotateFile: {},
+      transportsFile: {},
     };
 
     this.config = Object.assign(defaultConfig, config);
@@ -57,8 +73,7 @@ export class Logger {
           dirname: "logs/error",
           filename: "error.%DATE%.log",
           datePattern: "YYYY-MM-DD",
-          // maxSize: '20m',
-          // maxFiles: '14d',
+          ...this.config.dailyRotateFile,
         }),
       ],
     });
@@ -73,6 +88,7 @@ export class Logger {
           dirname: "logs/access",
           filename: "access.%DATE%.log",
           datePattern: "YYYY-MM-DD",
+          ...this.config.dailyRotateFile,
         }),
       ],
     });
@@ -87,6 +103,7 @@ export class Logger {
           dirname: "logs/daily",
           filename: "daily.%DATE%.log",
           datePattern: "YYYY-MM-DD",
+          ...this.config.dailyRotateFile,
         }),
       ],
     });
@@ -100,6 +117,7 @@ export class Logger {
           level: "debug",
           dirname: "logs",
           filename: "debug.log",
+          ...this.config.transportsFile,
         }),
       ],
     });

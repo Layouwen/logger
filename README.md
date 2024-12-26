@@ -80,6 +80,46 @@ logger.daily.info("info log")
 // [2024-08-08 16:37:24] [auth-service] [INFO]: info log
 ```
 
+### Daily Rotate File
+
+```ts
+interface DailyRotateFileConfig {
+  maxSize?: stringOrNumber;
+  maxFiles?: stringOrNumber;
+}
+```
+
+`maxSize`: Maximum size of the file after which it will rotate. This can be a number of bytes, or units of kb, mb, and gb. If using the units, add 'k', 'm', or 'g' as the suffix. The units need to directly follow the number.
+
+`maxFiles`: Maximum number of logs to keep. If not set, no logs will be removed. This can be a number of files or number of days. If using days, add 'd' as the suffix.
+
+```ts
+const logger = new Logger({
+  dailyRotateFile: {
+    maxSize: 1024 * 1024 * 400, // '400m'
+    maxFiles: 14, // '14d'
+  },
+});
+```
+
+### Transports File
+
+```ts
+interface TransportsFileConfig {
+  maxsize?: number;
+  maxFiles?: number;
+}
+```
+
+```ts
+const logger = new Logger({
+  transportsFile: {
+    maxsize: 1024 * 1024 * 400,
+    maxFiles: 14,
+  },
+});
+```
+
 ## Output Logger File
 
 ```

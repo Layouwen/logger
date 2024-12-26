@@ -1,6 +1,13 @@
 import { Logger } from "./src";
 
-const logger = new Logger();
+const logger = new Logger({
+  transportsFile: {
+    maxsize: 1024 * 1024 * 400,
+  },
+  dailyRotateFile: {
+    maxFiles: 14,
+  },
+});
 
 logger.access.info("access log");
 logger.daily.info("daily log");
