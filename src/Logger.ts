@@ -5,6 +5,8 @@ import { SPLAT } from "triple-beam";
 import { chalk } from "./utils";
 import { LevelColorMap } from "./LevelColorMap";
 import { LoggerLevel } from "./types";
+import { format as dateFnsFormat } from "date-fns";
+import { tz } from "@date-fns/tz";
 
 type stringOrNumber = string | number;
 
@@ -43,25 +45,28 @@ function safeStringify(value: any) {
 }
 
 export interface LoggerConfig {
-  projectName?: string;
-  dailyRotateFile?: DailyRotateFileConfig;
-  transportsFile?: TransportsFileConfig;
+  projectName: string;
+  timezone: string;
+  dailyRotateFile: DailyRotateFileConfig;
+  transportsFile: TransportsFileConfig;
 }
+
+const defaultConfig: LoggerConfig = {
+  projectName: "main-app",
+  dailyRotateFile: {},
+  transportsFile: {},
+  timezone: "Asia/Shanghai",
+};
 
 export class Logger {
   public error: WinstonLogger;
   public access: WinstonLogger;
   public daily: WinstonLogger;
   public debug: WinstonLogger;
+  private config: LoggerConfig = { ...defaultConfig };
 
-  constructor(private config: LoggerConfig = {}) {
-    const defaultConfig: LoggerConfig = {
-      projectName: "main-app",
-      dailyRotateFile: {},
-      transportsFile: {},
-    };
-
-    this.config = Object.assign(defaultConfig, config);
+  constructor(config: Partial<LoggerConfig> = {}) {
+    this.config = { ...defaultConfig, ...config };
 
     this.error = createLogger({
       level: "debug",
@@ -125,7 +130,11 @@ export class Logger {
 
   private getTimestampFormat() {
     return format.timestamp({
-      format: "YYYY-MM-DD HH:mm:ss",
+      format: () => {
+        return dateFnsFormat(new Date(), "yyyy-MM-dd HH:mm:ss", {
+          in: tz(this.config.timezone),
+        });
+      },
     });
   }
 
@@ -168,7 +177,7 @@ export class Logger {
         if (options?.type === "access" && rest[0] && isHttpLogger(rest[0])) {
           const { time, method, url, ip, headers, query, body } = rest[0];
           if (_options?.color) {
-            result += ` ${chalk.green(`${time}`)} ${chalk.cyan(method)} ${chalk.blue(url)} ${chalk.yellow(ip)} ${chalk.magenta('headers:')} ${chalk.gray(safeStringify(headers))} ${chalk.magenta('query:')} ${chalk.gray(safeStringify(query))} ${chalk.magenta('body:')} ${chalk.gray(safeStringify(body))}`;
+            result += ` ${chalk.green(`${time}`)} ${chalk.cyan(method)} ${chalk.blue(url)} ${chalk.yellow(ip)} ${chalk.magenta("headers:")} ${chalk.gray(safeStringify(headers))} ${chalk.magenta("query:")} ${chalk.gray(safeStringify(query))} ${chalk.magenta("body:")} ${chalk.gray(safeStringify(body))}`;
           } else {
             result += ` ${time} ${method} ${url} ${ip} headers: ${safeStringify(headers)} query: ${safeStringify(query)} body: ${safeStringify(body)}`;
           }

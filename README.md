@@ -80,6 +80,16 @@ logger.daily.info("info log")
 // [2024-08-08 16:37:24] [auth-service] [INFO]: info log
 ```
 
+### Timezone
+
+The default timezone is `Asia/Shanghai`.
+
+```ts
+const logger = new Logger({
+  timezone: "America/New_York",
+});
+```
+
 ### Daily Rotate File
 
 ```ts
@@ -175,3 +185,5 @@ app.use(expressHttpLogger(logger));
 - [x] Koa middleware
 - [x] Express middleware
 - [x] Console support color
+- [x] Timezone support
+- [x] Logger clear

@@ -1,6 +1,6 @@
 {
   "name": "@avanlan/logger",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A logger for Node.js",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -39,6 +39,8 @@
     "typescript": "^5.5.4"
   },
   "dependencies": {
+    "@date-fns/tz": "^1.2.0",
+    "date-fns": "^4.1.0",
     "picocolors": "^1.1.1",
     "triple-beam": "^1.4.1",
     "winston": "^3.14.0",

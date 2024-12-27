@@ -1,6 +1,8 @@
 import { Logger } from "./src";
 
 const logger = new Logger({
+  projectName: "demo-app",
+  timezone: "America/New_York",
   transportsFile: {
     maxsize: 1024 * 1024 * 400,
   },
