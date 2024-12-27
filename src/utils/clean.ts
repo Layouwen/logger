@@ -20,11 +20,19 @@ function cleanLog(maxFiles: number | string, maxSize: number) {
 
     const files = fs.readdirSync(dirPath)
       .filter(file => datePattern.test(file))
-      .map(file => ({
-        name: file,
-        path: path.join(dirPath, file),
-        date: new Date(datePattern.exec(file)![0])
-      }));
+      .map(file => {
+        const filePath = path.join(dirPath, file);
+        // Check if file exists before including it
+        if (!fs.existsSync(filePath)) {
+          return null;
+        }
+        return {
+          name: file,
+          path: filePath,
+          date: new Date(datePattern.exec(file)![0])
+        };
+      })
+      .filter((file): file is NonNullable<typeof file> => file !== null);
 
     files.sort((a, b) => b.date.getTime() - a.date.getTime());
 
@@ -39,22 +47,28 @@ function cleanLog(maxFiles: number | string, maxSize: number) {
         
         const filesToDelete = files.filter(file => file.date < cutoffDate);
         for (const file of filesToDelete) {
-          fs.unlinkSync(file.path);
+          if (fs.existsSync(file.path)) {
+            fs.unlinkSync(file.path);
+          }
         }
       }
     } else if (typeof maxFiles === 'number') {
       const filesToDelete = files.slice(maxFiles);
       for (const file of filesToDelete) {
-        fs.unlinkSync(file.path);
+        if (fs.existsSync(file.path)) {
+          fs.unlinkSync(file.path);
+        }
       }
     } else {
       console.error('maxFiles must be a number or a string with format like "7d"');
     }
 
     for (const file of files) {
-      const stats = fs.statSync(file.path);
-      if (stats.size > maxSize) {
-        fs.unlinkSync(file.path);
+      if (fs.existsSync(file.path)) {
+        const stats = fs.statSync(file.path);
+        if (stats.size > maxSize) {
+          fs.unlinkSync(file.path);
+        }
       }
     }
   }

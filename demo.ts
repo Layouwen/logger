@@ -5,8 +5,8 @@ const logger = new Logger({
   timezone: "America/New_York",
   clean: {
     type: CleanType.NODE, // default winston
-    maxFiles: 14, // default 14
-    maxSize: 1024 * 1024 * 100, // default 100m
+    maxFiles: 2, // default 14
+    maxSize: 1024 * 1024 * 1, // default 100m
   },
   transportsFile: {
     maxsize: 1024 * 1024 * 400,
