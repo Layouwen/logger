@@ -2,17 +2,25 @@ import type { Logger as WinstonLogger } from "winston";
 import { createLogger, format, transports } from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
 import { SPLAT } from "triple-beam";
-import { chalk } from "./utils";
+import { chalk, cleanLogExec } from "./utils";
 import { LevelColorMap } from "./LevelColorMap";
 import { LoggerLevel } from "./types";
 import { format as dateFnsFormat } from "date-fns";
 import { tz } from "@date-fns/tz";
 
-type stringOrNumber = string | number;
-
+type StringOrNumber = string | number;
+export enum CleanType {
+  WINSTON = "winston",
+  NODE = "node",
+}
+interface CleanOptions {
+  type: CleanType;
+  maxFiles: StringOrNumber;
+  maxSize: number;
+}
 interface DailyRotateFileConfig {
-  maxSize?: stringOrNumber;
-  maxFiles?: stringOrNumber;
+  maxSize?: StringOrNumber;
+  maxFiles?: StringOrNumber;
 }
 
 interface TransportsFileConfig {
@@ -46,13 +54,21 @@ function safeStringify(value: any) {
 
 export interface LoggerConfig {
   projectName: string;
+  clean: Partial<CleanOptions>;
   timezone: string;
   dailyRotateFile: DailyRotateFileConfig;
   transportsFile: TransportsFileConfig;
 }
 
+const defaultCleanOptions: CleanOptions = {
+  type: CleanType.WINSTON,
+  maxFiles: 14,
+  maxSize: 100 * 1024 * 1024,
+};
+
 const defaultConfig: LoggerConfig = {
   projectName: "main-app",
+  clean: { ...defaultCleanOptions },
   dailyRotateFile: {},
   transportsFile: {},
   timezone: "Asia/Shanghai",
@@ -63,10 +79,27 @@ export class Logger {
   public access: WinstonLogger;
   public daily: WinstonLogger;
   public debug: WinstonLogger;
+  private cleanOptions: CleanOptions = { ...defaultCleanOptions };
   private config: LoggerConfig = { ...defaultConfig };
 
   constructor(config: Partial<LoggerConfig> = {}) {
     this.config = { ...defaultConfig, ...config };
+
+    if (this.config.clean) {
+      this.cleanOptions = { ...defaultCleanOptions, ...this.config.clean };
+    }
+
+    switch (this.cleanOptions.type) {
+      case CleanType.NODE:
+        console.info("[Logger] clean type is node");
+        cleanLogExec(this.cleanOptions.maxFiles, this.cleanOptions.maxSize);
+        break;
+      case CleanType.WINSTON:
+        console.info("[Logger] clean type is winston");
+        break;
+      default:
+        throw new Error("[Logger] clean type is not supported");
+    }
 
     this.error = createLogger({
       level: "debug",
@@ -78,7 +111,7 @@ export class Logger {
           dirname: "logs/error",
           filename: "error.%DATE%.log",
           datePattern: "YYYY-MM-DD",
-          ...this.config.dailyRotateFile,
+          ...this.isCleanTypeWinstonReturn(this.config.dailyRotateFile),
         }),
       ],
     });
@@ -93,7 +126,7 @@ export class Logger {
           dirname: "logs/access",
           filename: "access.%DATE%.log",
           datePattern: "YYYY-MM-DD",
-          ...this.config.dailyRotateFile,
+          ...this.isCleanTypeWinstonReturn(this.config.dailyRotateFile),
         }),
       ],
     });
@@ -108,7 +141,7 @@ export class Logger {
           dirname: "logs/daily",
           filename: "daily.%DATE%.log",
           datePattern: "YYYY-MM-DD",
-          ...this.config.dailyRotateFile,
+          ...this.isCleanTypeWinstonReturn(this.config.dailyRotateFile),
         }),
       ],
     });
@@ -122,10 +155,14 @@ export class Logger {
           level: "debug",
           dirname: "logs",
           filename: "debug.log",
-          ...this.config.transportsFile,
+          ...this.isCleanTypeWinstonReturn(this.config.transportsFile),
         }),
       ],
     });
+  }
+
+  private isCleanTypeWinstonReturn<T extends DailyRotateFileConfig | TransportsFileConfig>(config: T) {
+    return this.cleanOptions.type === CleanType.WINSTON ? config : {};
   }
 
   private getTimestampFormat() {

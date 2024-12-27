@@ -18,34 +18,44 @@ pnpm i @avanlan/logger
 ```ts
 import { Logger } from '@avanlan/logger';
 
-const logger = new Logger();
+const logger = new Logger({
+  projectName: "demo-app",
+  timezone: "America/New_York",
+  clean: {
+    type: CleanType.NODE, // default winston
+    maxFiles: 14, // default 14
+    maxSize: 1024 * 1024 * 100, // default 100m
+  },
+  transportsFile: {
+    maxsize: 1024 * 1024 * 400,
+  },
+  dailyRotateFile: {
+    maxFiles: 14,
+  },
+});
 
-logger.access.info('access log');
+logger.access.info("access log");
 logger.daily.info("daily log");
 logger.error.error("error log", new Error());
 logger.debug.info("debug log", { a: 1 });
 logger.access.info({
-  time: '32m',
+  time: "32m",
   method: "GET",
   url: "/",
   ip: "127.0.0.1",
   body: "hello",
-  headers: {
-    "content-type": "application/json",
-  },
-  query: {
-    a: 1,
-  },
+  headers: { "content-type": "application/json" },
+  query: { a: 1 },
 });
 ```
 
 output
 
 ```bash
-[2024-12-13 12:13:19] [main-app] [INFO]: access log
-[2024-12-13 12:13:19] [main-app] [INFO]: daily log
-[2024-12-13 12:13:19] [main-app] [ERROR]: error log Error  Error
-    at Object.<anonymous> (/Users/avan/Code/personal/logger/demo.ts:7:33)
+[2024-12-26 23:05:18] [demo-app] [INFO]: access log
+[2024-12-26 23:05:18] [demo-app] [INFO]: daily log
+[2024-12-26 23:05:18] [demo-app] [ERROR]: error log Error  Error
+    at Object.<anonymous> (/Users/avan/Code/personal/logger/demo.ts:21:33)
     at Module._compile (node:internal/modules/cjs/loader:1546:14)
     at Module.m._compile (/Users/avan/Code/personal/logger/node_modules/.pnpm/ts-node@10.9.2_@types+node@22.10.2_typescript@5.7.2/node_modules/ts-node/src/index.ts:1618:23)
     at node:internal/modules/cjs/loader:1689:10
@@ -55,8 +65,8 @@ output
     at TracingChannel.traceSync (node:diagnostics_channel:315:14)
     at wrapModuleLoad (node:internal/modules/cjs/loader:218:24)
     at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:170:5)
-[2024-12-13 12:13:19] [main-app] [INFO]: debug log {"a":1}
-[2024-12-13 12:13:19] [main-app] [INFO]: 32m GET / 127.0.0.1 headers: {"content-type":"application/json"} query: {"a":1} body: "hello"
+[2024-12-26 23:05:18] [demo-app] [INFO]: debug log {"a":1}
+[2024-12-26 23:05:18] [demo-app] [INFO]: 32m GET / 127.0.0.1 headers: {"content-type":"application/json"} query: {"a":1} body: "hello"
 ```
 
 ![demo01](./images/demo01.jpg)
@@ -90,7 +100,35 @@ const logger = new Logger({
 });
 ```
 
+### Clean
+
+```ts
+interface CleanOptions {
+  type?: CleanType;
+  maxFiles?: number | string;
+  maxSize?: number;
+}
+```
+
+`type`: Clean type, default is `CleanType.WINSTON`.
+
+`maxFiles`: Maximum number of logs to keep. If not set, no logs will be removed. This can be a number of files or number of days. If using days, add 'd' as the suffix. Work with `CleanType.NODE`. default is `14`.
+
+`maxSize`: Maximum size of the file after which it will rotate. unit is byte. Work with `CleanType.NODE`. default is `100 * 1024 * 1024`(100m).
+
+```ts
+const logger = new Logger({
+  clean: {
+    type: CleanType.NODE,
+    maxFiles: 14,
+    maxSize: 1024 * 1024 * 100,
+  },
+});
+```
+
 ### Daily Rotate File
+
+Work with `CleanType.WINSTON`.
 
 ```ts
 interface DailyRotateFileConfig {
@@ -113,6 +151,8 @@ const logger = new Logger({
 ```
 
 ### Transports File
+
+Work with `CleanType.WINSTON`.
 
 ```ts
 interface TransportsFileConfig {
@@ -176,6 +216,14 @@ app.use(expressHttpLogger(logger));
 // [2024-08-08 17:47:55] [main-app] [INFO]: 0ms GET / ::1 headers: {"host":"localhost:5834","user-agent":"curl/8.6.0","accept":"*/*"} query: {} body: {}
 ```
 
+## Demo
+
+[demo.ts](./demo.ts)
+
+```bash
+pnpm run demo
+```
+
 ## Features
 
 - [x] Access log
@@ -186,4 +234,5 @@ app.use(expressHttpLogger(logger));
 - [x] Express middleware
 - [x] Console support color
 - [x] Timezone support
-- [x] Logger clear
+- [x] Logger clear by winston
+- [x] Logger clear by node

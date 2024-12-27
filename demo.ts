@@ -1,8 +1,13 @@
-import { Logger } from "./src";
+import { Logger, CleanType } from "./src";
 
 const logger = new Logger({
   projectName: "demo-app",
   timezone: "America/New_York",
+  clean: {
+    type: CleanType.NODE, // default winston
+    maxFiles: 14, // default 14
+    maxSize: 1024 * 1024 * 100, // default 100m
+  },
   transportsFile: {
     maxsize: 1024 * 1024 * 400,
   },
