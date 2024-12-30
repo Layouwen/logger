@@ -5,8 +5,7 @@ import { SPLAT } from "triple-beam";
 import { chalk, cleanLogExec } from "./utils";
 import { LevelColorMap } from "./LevelColorMap";
 import { LoggerLevel } from "./types";
-import { format as dateFnsFormat } from "date-fns";
-import { tz } from "@date-fns/tz";
+import { formatInTimeZone } from "date-fns-tz";
 
 type StringOrNumber = string | number;
 export enum CleanType {
@@ -161,16 +160,20 @@ export class Logger {
     });
   }
 
-  private isCleanTypeWinstonReturn<T extends DailyRotateFileConfig | TransportsFileConfig>(config: T) {
+  private isCleanTypeWinstonReturn<
+    T extends DailyRotateFileConfig | TransportsFileConfig,
+  >(config: T) {
     return this.cleanOptions.type === CleanType.WINSTON ? config : {};
   }
 
   private getTimestampFormat() {
     return format.timestamp({
       format: () => {
-        return dateFnsFormat(new Date(), "yyyy-MM-dd HH:mm:ss", {
-          in: tz(this.config.timezone),
-        });
+        return formatInTimeZone(
+          new Date(),
+          this.config.timezone,
+          "yyyy-MM-dd HH:mm:ss"
+        );
       },
     });
   }
